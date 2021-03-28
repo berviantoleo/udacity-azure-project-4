@@ -79,9 +79,9 @@ def index():
 
         # Get current values
         vote1 = r.get(button1).decode('utf-8')
-        tracer.span(name="Cat Voted")
+        tracer.span(name="Total {} Voted: {}".format(button1, vote1))
         vote2 = r.get(button2).decode('utf-8')
-        tracer.span(name="Dog Voted")
+        tracer.span(name="Total {} Voted: {}".format(button2, vote2))
 
         # Return index with values
         return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
@@ -95,11 +95,11 @@ def index():
             r.set(button2,0)
             vote1 = r.get(button1).decode('utf-8')
             properties = {'custom_dimensions': {'Cats Vote': vote1}}
-            logger.info('cat voted', extra=properties)
+            logger.info("{} voted".format(button1), extra=properties)
 
             vote2 = r.get(button2).decode('utf-8')
             properties = {'custom_dimensions': {'Dogs Vote': vote2}}
-            logger.info('dog voted', extra=properties)
+            logger.info("{} voted".format(button2), extra=properties)
 
             return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
 
@@ -107,6 +107,7 @@ def index():
 
             # Insert vote result into DB
             vote = request.form['vote']
+            tracer.span(name="{} clicked vote".format(vote))
             r.incr(vote,1)
 
             # Get current values
