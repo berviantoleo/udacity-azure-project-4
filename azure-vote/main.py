@@ -107,8 +107,9 @@ def index():
 
             # Insert vote result into DB
             vote = request.form['vote']
-            tracer.span(name="{} clicked vote".format(vote))
-            r.incr(vote,1)
+            with tracer.span(name="vote {} clicked".format(vote)) as span:
+                r.incr(vote,1)
+                logger.info("{} voted".format(vote))
 
             # Get current values
             vote1 = r.get(button1).decode('utf-8')
@@ -121,4 +122,4 @@ if __name__ == "__main__":
     # comment line below when deploying to VMSS
     # app.run() # local
     # uncomment the line below before deployment to VMSS
-    app.run(host='0.0.0.0', threaded=True, debug=True) # remote
+    app.run(host='0.0.0.0', port=os.environ['PORT'], threaded=True, debug=True) # remote
