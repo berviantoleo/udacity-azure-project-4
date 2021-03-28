@@ -21,7 +21,6 @@ from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 # Logging
 logger = logging.getLogger(__name__)
 logger.addHandler(AzureLogHandler(connection_string='InstrumentationKey=75b36801-bb3d-44fa-aa62-8fa210b1178b'))
-logger.setLevel(logging.INFO)
 
 # Metrics
 exporter = metrics_exporter.new_metrics_exporter(
@@ -79,10 +78,8 @@ def index():
 
         # Get current values
         vote1 = r.get(button1).decode('utf-8')
-        tracer.span(key="GET {} Vote".format(button1))
         tracer.span(name="Total {} Voted: {}".format(button1, vote1))
         vote2 = r.get(button2).decode('utf-8')
-        tracer.span(key="GET {} Vote".format(button2))
         tracer.span(name="Total {} Voted: {}".format(button2, vote2))
 
         # Return index with values
@@ -97,11 +94,11 @@ def index():
             r.set(button2,0)
             vote1 = r.get(button1).decode('utf-8')
             properties = {'custom_dimensions': {'Cats Vote': vote1}}
-            logger.info("{} voted".format(button1), extra=properties)
+            logger.warning("{} voted".format(button1), extra=properties)
 
             vote2 = r.get(button2).decode('utf-8')
             properties = {'custom_dimensions': {'Dogs Vote': vote2}}
-            logger.info("{} voted".format(button2), extra=properties)
+            logger.warning("{} voted".format(button2), extra=properties)
 
             return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
 
@@ -111,7 +108,7 @@ def index():
             vote = request.form['vote']
             with tracer.span(name="vote {} clicked".format(vote)) as span:
                 r.incr(vote,1)
-                logger.info("{} voted".format(vote))
+                logger.warning("{} voted".format(vote))
 
             # Get current values
             vote1 = r.get(button1).decode('utf-8')
@@ -124,4 +121,4 @@ if __name__ == "__main__":
     # comment line below when deploying to VMSS
     # app.run() # local
     # uncomment the line below before deployment to VMSS
-    app.run(host='0.0.0.0', port=os.environ['PORT'], threaded=True, debug=True) # remote
+    app.run(host='0.0.0.0', threaded=True, debug=True) # remote
