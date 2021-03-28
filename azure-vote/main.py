@@ -6,7 +6,7 @@ import socket
 import sys
 import logging
 from datetime import datetime
-from opencensus.ext.azure.log_exporter import AzureLogHandler
+from opencensus.ext.azure.log_exporter import AzureLogHandler, AzureEventHandler
 from opencensus.ext.azure import metrics_exporter
 from opencensus.stats import aggregation as aggregation_module
 from opencensus.stats import measure as measure_module
@@ -21,6 +21,7 @@ from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 # Logging
 logger = logging.getLogger(__name__)
 logger.addHandler(AzureLogHandler(connection_string='InstrumentationKey=75b36801-bb3d-44fa-aa62-8fa210b1178b'))
+logger.addHandler(AzureEventHandler(connection_string='InstrumentationKey=75b36801-bb3d-44fa-aa62-8fa210b1178b'))
 
 # Metrics
 exporter = metrics_exporter.new_metrics_exporter(
