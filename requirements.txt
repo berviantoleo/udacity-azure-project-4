@@ -1,4 +1,4 @@
-Flask==2.1.1
+Flask==2.1.2
 opencensus-ext-azure==1.1.4
 opencensus-ext-flask==0.8.0
 redis==4.2.2
