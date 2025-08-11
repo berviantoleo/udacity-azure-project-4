@@ -1,4 +1,4 @@
 Flask==3.1.1
 opencensus-ext-azure==1.1.15
 opencensus-ext-flask==0.8.2
-redis==6.2.0
+redis==6.4.0
